@@ -1,0 +1,7 @@
+{
+    "dbHost": "127.0.0.1",
+    "dbName": "swg",
+	"dbUser": "username",
+	"dbPassword": "password",
+	"autoRegistration": false
+}
