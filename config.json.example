@@ -3,5 +3,8 @@
     "dbName": "swg",
 	"dbUser": "username",
 	"dbPassword": "password",
-	"autoRegistration": false
+	"autoRegistration": true,
+	"discordBotToken": "token",
+	"discordBotChannelName": "channelName",
+	"discordStatusInterval": 60
 }

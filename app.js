@@ -6,7 +6,11 @@ const crypto = require('crypto');
 const CONFIG = require('./config.json');
 const database = require("./database.js");
 
+const Discord = require('discord.js');
+
 // ---------------------------------------------------------------
+
+const client = new Discord.Client();
 
 var app = express();
 
@@ -30,6 +34,14 @@ function dateFromUTSC(utscTime) {
 	return d;
 }
 
+function readableTimeDiff(timeDiff) {
+	var result = "";
+	if(timeDiff.days > 0) result += timeDiff.days + " days, ";
+	if(timeDiff.hours > 0) result += timeDiff.hours + " hours, ";
+	if(timeDiff.minutes > 0) result += timeDiff.minutes + " minutes, ";
+	return result + timeDiff.seconds + " seconds";
+}
+
 // ---------------------------------------------------------------
 
 app.post("/api/auth", function (req, res) {
@@ -39,18 +51,23 @@ app.post("/api/auth", function (req, res) {
 				"User: " + login.user_name + ", " + 
 				"IP: "   + login.ip);
 
-	database.getUser(login.user_name, function(err, user) {
-		if (user !== undefined) {
+	var loginHandler = function (err, user) {
+		if (user !== undefined && user !== null) {
 			if (user.password_hash === getHash(login.user_password, user.password_salt)) {
 				res.send( { message: 'success' } );
 			} else {
 				res.send( { message: 'Invalid password' } );
 			}
 		} else {
-			// @TODO: cfg option to allow auto account creation if account doesnt exist 
-			res.send( { message: 'Unknown username' } );
+			if ( CONFIG.autoRegistration ) {
+				database.createUser(login.user_name, getHash(login.user_password, "aaaa"), "@todo:email", loginHandler);
+			} else { 
+				res.send( { message: 'Unknown username' } );
+			}
 		}
-	});
+	}
+
+	database.getUser(login.user_name, loginHandler);
 });
 
 app.post("/api/createUser", function (req, res) {
@@ -58,13 +75,19 @@ app.post("/api/createUser", function (req, res) {
 	res.json('success');
 });
 
+var clusterName = "N/A";
+var clusterStatus = "N/A";
+var clusterUptime = "N/A";
+var clusterPopulation = "N/A";
+
 app.post("/api/sendMetrics", function (req, res) {
 	var metrics = req.body;
-	
-	var clusterName = metrics.clusterName;
-	var clusterStatus = "N/A";
-	var clusterUptime = { "days": 0, "hours": 0, "minutes": 0, "seconds": 0 };
-	
+
+	clusterName = metrics.clusterName;
+	clusterStatus = "N/A";
+	clusterUptime = { "days": 0, "hours": 0, "minutes": 0, "seconds": 0 };
+	clusterPopulation = metrics.totalPlayerCount;
+
 	if (metrics.timeClusterWentIntoLoadingState > metrics.lastLoadingStateTime) {
 		clusterStatus = "Loading";
 	}
@@ -78,13 +101,28 @@ app.post("/api/sendMetrics", function (req, res) {
 	}
 
 	console.log("New Metrics: \t" +
-				"Cluster: "     + clusterName               + ", " + 
-				"Status: "      + clusterStatus             + ", " + 
-				"Players: "     + metrics.totalPlayerCount  + ", " + 
-				"Last Load: "   + JSON.stringify(clusterUptime));
-	
+				"Cluster: "   + clusterName       + ", " + 
+				"Status: "    + clusterStatus     + ", " + 
+				"Players: "   + clusterPopulation + ", " + 
+				"Last Load: " + readableTimeDiff(clusterUptime) + " ago");
+
 	res.json('success');
 });
+
+// ---------------------------------------------------------------
+
+client.on('ready', () => {
+	var channel = client.channels.find("name", CONFIG.discordBotChannelName);
+	setInterval(function() {
+		channel.sendMessage(
+				"**Cluster** `"   + clusterName       + "`  " + 
+				"**Status** `"    + clusterStatus     + "`  " + 
+				"**Players** `"   + clusterPopulation + "`  " + 
+				"**Last Load** `" + readableTimeDiff(clusterUptime) + " ago`");
+	}, CONFIG.discordStatusInterval * 1000)
+});
+
+client.login(CONFIG.discordBotToken);
 
 // ---------------------------------------------------------------
 
