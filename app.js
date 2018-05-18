@@ -86,11 +86,11 @@ app.post("/api/sendMetrics", function (req, res) {
 		cluster = { }
 		clusters[clusterName] = cluster;
 		clusters[clusterName].clusterStartTime = Date.now();
+		cluster.clusterUptime = { "days": 0, "hours": 0, "minutes": 0, "seconds": 0 };
 	}
 
 	cluster.clusterStatus = "N/A";
 	cluster.clusterLastLoad = { "days": 0, "hours": 0, "minutes": 0, "seconds": 0 };
-	cluster.clusterUptime = { "days": 0, "hours": 0, "minutes": 0, "seconds": 0 };
 	cluster.clusterPopulation = metrics.totalPlayerCount;
 	cluster.clusterLastUpdate = Date.now();
 
@@ -141,7 +141,7 @@ if(CONFIG.discordBot) {
 				cluster.clusterUptime = timediff(cluster.clusterStartTime, Date.now(), 'DHmS');
 			}
 		}
-	}, CONFIG.discordStatusInterval * 1000)
+	}, 5 * 1000)
 
 	client.on('ready', () => {
 		var channel = client.channels.find("name", CONFIG.discordBotChannelName);
@@ -178,6 +178,9 @@ if(CONFIG.restartServer) {
 					channel.sendMessage("@here **Restarting cluster `" + CONFIG.restartClusterName + "` due to detected offline status!**");
 				}
 			}
+		} else {
+			console.log("[****] Starting server!!!");
+			cp.exec(CONFIG.restartCommand, {cwd: CONFIG.restartWorkingPath}, function(error,stdout,stderr){ });
 		}
 	}, 60 * 1000)
 }
