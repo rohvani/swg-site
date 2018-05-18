@@ -6,5 +6,9 @@
 	"autoRegistration": true,
 	"discordBotToken": "token",
 	"discordBotChannelName": "channelName",
-	"discordStatusInterval": 60
+	"discordStatusInterval": 30,
+	"restartServer": true,
+	"restartClusterName": "Bloodfin",
+	"restartWorkingPath": "/home/user/swg-main/",
+	"restartCommand": "./start_server.sh"
 }

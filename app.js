@@ -75,54 +75,112 @@ app.post("/api/createUser", function (req, res) {
 	res.json('success');
 });
 
-var clusterName = "N/A";
-var clusterStatus = "N/A";
-var clusterUptime = "N/A";
-var clusterPopulation = "N/A";
+var clusters = { };
 
 app.post("/api/sendMetrics", function (req, res) {
 	var metrics = req.body;
-
 	clusterName = metrics.clusterName;
-	clusterStatus = "N/A";
-	clusterUptime = { "days": 0, "hours": 0, "minutes": 0, "seconds": 0 };
-	clusterPopulation = metrics.totalPlayerCount;
+
+	var cluster = clusters[clusterName];
+	if(cluster === undefined) { 
+		cluster = { }
+		clusters[clusterName] = cluster;
+		clusters[clusterName].clusterStartTime = Date.now();
+	}
+
+	cluster.clusterStatus = "N/A";
+	cluster.clusterLastLoad = { "days": 0, "hours": 0, "minutes": 0, "seconds": 0 };
+	cluster.clusterUptime = { "days": 0, "hours": 0, "minutes": 0, "seconds": 0 };
+	cluster.clusterPopulation = metrics.totalPlayerCount;
+	cluster.clusterLastUpdate = Date.now();
+
+	if(clusters[clusterName].clusterStartTime == null) {
+		cluster.clusterStartTime = Date.now();
+	}
 
 	if (metrics.timeClusterWentIntoLoadingState > metrics.lastLoadingStateTime) {
-		clusterStatus = "Loading";
+		cluster.clusterStatus = "Loading";
 	}
 	else if (metrics.lastLoadingStateTime > 0) {
-		clusterStatus = "Online"; 
+		cluster.clusterStatus = "Online"; 
 		var lastLoadDate = dateFromUTSC(metrics.lastLoadingStateTime);
-		clusterUptime = timediff(lastLoadDate, Date.now(), 'DHmS');
+		cluster.clusterLastLoad = timediff(lastLoadDate, Date.now(), 'DHmS');
 	}
 	else { 
-		clusterStatus = "Offline"; 
+		clusters[clusterName].clusterStatus = "Offline";
+		cluster.clusterStartTime = null;
+		console.log("offline");
 	}
 
 	console.log("New Metrics: \t" +
-				"Cluster: "   + clusterName       + ", " + 
-				"Status: "    + clusterStatus     + ", " + 
-				"Players: "   + clusterPopulation + ", " + 
-				"Last Load: " + readableTimeDiff(clusterUptime) + " ago");
+				"Cluster: "   + clusterName               + ", " + 
+				"Status: "    + cluster.clusterStatus     + ", " + 
+				"Players: "   + cluster.clusterPopulation + ", " + 
+				"Last Load: " + readableTimeDiff(cluster.clusterLastLoad) + " ago, " +
+				"Uptime: "    + readableTimeDiff(cluster.clusterUptime));
 
 	res.json('success');
 });
 
 // ---------------------------------------------------------------
 
-client.on('ready', () => {
-	var channel = client.channels.find("name", CONFIG.discordBotChannelName);
-	setInterval(function() {
-		channel.sendMessage(
-				"**Cluster** `"   + clusterName       + "`  " + 
-				"**Status** `"    + clusterStatus     + "`  " + 
-				"**Players** `"   + clusterPopulation + "`  " + 
-				"**Last Load** `" + readableTimeDiff(clusterUptime) + " ago`");
-	}, CONFIG.discordStatusInterval * 1000)
-});
+if(CONFIG.discordBot) {
 
-client.login(CONFIG.discordBotToken);
+	// Status checker
+	setInterval(function() {
+		for(var clusterName in clusters) {
+			let cluster = clusters[clusterName];
+			// if we haven't received an update in twice as long as the interval, the server isn't responding
+			if(Date.now() - cluster.clusterLastUpdate > (CONFIG.discordStatusInterval * 2 * 1000)) {
+				cluster.clusterStatus = "Offline";
+				cluster.clusterLastLoad = { "days": 0, "hours": 0, "minutes": 0, "seconds": 0 };
+				cluster.clusterUptime = { "days": 0, "hours": 0, "minutes": 0, "seconds": 0 };
+				cluster.clusterPopulation = 0;
+				cluster.clusterStartTime = null;
+			} else {
+				cluster.clusterUptime = timediff(cluster.clusterStartTime, Date.now(), 'DHmS');
+			}
+		}
+	}, CONFIG.discordStatusInterval * 1000)
+
+	client.on('ready', () => {
+		var channel = client.channels.find("name", CONFIG.discordBotChannelName);
+		setInterval(function() {
+			for(var clusterName in clusters) {
+				let cluster = clusters[clusterName];
+				channel.sendMessage(
+						"**Cluster** `"   + clusterName               + "`  " + 
+						"**Status** `"    + cluster.clusterStatus     + "`  " + 
+						"**Players** `"   + cluster.clusterPopulation + "`  " + 
+						"**Last Load** `" + readableTimeDiff(cluster.clusterLastLoad) + " ago`  " + 
+						"**Uptime** `"    + readableTimeDiff(cluster.clusterUptime)   + "` ");
+			}
+		}, CONFIG.discordStatusInterval * 1000)
+	});
+
+
+	client.login(CONFIG.discordBotToken);
+}
+
+// ---------------------------------------------------------------
+
+if(CONFIG.restartServer) {
+	var cp = require("child_process");
+
+	setInterval(function() {
+		var cluster = clusters[CONFIG.restartClusterName];
+		if(cluster !== undefined) {
+			if(cluster.clusterStatus === "Offline") {
+				console.log("[****] Restarting server!!!");
+				cp.exec(CONFIG.restartCommand, {cwd: CONFIG.restartWorkingPath}, function(error,stdout,stderr){ });
+				if(CONFIG.discordBot) {
+					var channel = client.channels.find("name", CONFIG.discordBotChannelName);
+					channel.sendMessage("@here **Restarting cluster `" + CONFIG.restartClusterName + "` due to detected offline status!**");
+				}
+			}
+		}
+	}, 60 * 1000)
+}
 
 // ---------------------------------------------------------------
 
