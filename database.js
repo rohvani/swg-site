@@ -19,7 +19,7 @@
 				var user = (result.length >= 1 ? result[0] : null);
 				callback(err, user);
 			} else {
-				console.log("0 results for username " + username);
+				console.log(err);
 			}
 		});
 	}
