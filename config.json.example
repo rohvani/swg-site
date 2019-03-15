@@ -1,15 +1,15 @@
 {
     "dbHost": "127.0.0.1",
     "dbName": "swg",
-	"dbUser": "username",
-	"dbPassword": "password",
-	"autoRegistration": true,
-	"discordBot": true,
-	"discordBotToken": "token",
-	"discordBotChannelName": "channelName",
-	"discordStatusInterval": 30,
-	"restartServer": true,
-	"restartClusterName": "Bloodfin",
-	"restartWorkingPath": "/home/user/swg-main/",
-	"restartCommand": "./start_server.sh"
+    "dbUser": "username",
+    "dbPassword": "password",
+    "autoRegistration": true,
+    "discordBot": true,
+    "discordBotToken": "token",
+    "discordBotChannelName": "channelName",
+    "discordStatusInterval": 30,
+    "restartServer": true,
+    "restartClusterName": "Bloodfin",
+    "restartWorkingPath": "/home/user/swg-main/",
+    "restartCommand": "./start_server.sh"
 }

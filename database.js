@@ -1,14 +1,14 @@
 (function() {
 	var exports = module.exports = {};
 	
-	const CONFIG = require('./config.json');
+	const config = require('./config.json');
 	const mysql = require('mysql');
 	
 	var con = mysql.createConnection({
-		host: CONFIG.dbHost,
-		database: CONFIG.dbName,
-		user: CONFIG.dbUser,
-		password: CONFIG.dbPassword
+		host: config.dbHost,
+		database: config.dbName,
+		user: config.dbUser,
+		password: config.dbPassword
 	});
 
 	// callback = function(err, user)

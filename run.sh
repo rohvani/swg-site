@@ -1,5 +1,5 @@
 killall node
 while [ : ]
 do
-	node app.js
+	node main.js
 done
