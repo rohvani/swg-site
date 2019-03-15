@@ -23,6 +23,18 @@ Star Wars: Galaxies authentication/community suite, written in node.js
 ## Configuration
 1. Copy `docs/config.json.example` to `src/config.json`
 2. Update `src/config.json` with your settings
+3. Update SWG game server configs with below settings; *make sure you replace 
+   the port and IP with where it's actually listening!*
+```
+[CentralServer]
+metricsDataURL=http://127.0.0.1:3000/api/sendMetrics
+webUpdateIntervalSeconds=5
+
+[LoginServer]
+externalAuthURL=http://127.0.0.1:3000/api/auth
+useExternalAuth=true
+useJsonWebApi=true
+```
 
 ## Running
 1. After setting up the database and your configuration file, `./run.sh`
