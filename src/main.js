@@ -1,6 +1,8 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 
+// ---------------------------------------------------------------
+
 var app = express();
 app.use(express.json());
 app.use(express.static('../www'));
@@ -10,25 +12,36 @@ app.listen(3000);
 
 // ---------------------------------------------------------------
 
-var apis = {};
-apis.apiAuth = require('./api/auth.js');
-apis.apiAuth.registerEndpoint(app);
-apis.apiCreateUser = require('./api/createUser.js');
-apis.apiCreateUser.registerEndpoint(app);
-apis.apiSendMetrics = require('./api/sendMetrics.js');
-apis.apiSendMetrics.registerEndpoint(app);
+var mainApp = {};
+
+mainApp.app = app;
+var managers = mainApp.managers = {};
+var apis = mainApp.apis = {};
+var config = mainApp.config = require('./config.json');
+var database = mainApp.database = require("./database.js");
+var utils = mainApp.utils = require('./utils');
 
 // ---------------------------------------------------------------
 
-const config = require('./config.json');
+apis.apiLogin = require('./api/login.js');
+apis.apiRegister = require('./api/register.js');
+apis.apiMetrics = require('./api/metrics.js');
 
-var managers = {};
+apis.apiLogin.registerEndpoint(mainApp);
+apis.apiRegister.registerEndpoint(mainApp);
+apis.apiMetrics.registerEndpoint(mainApp);
+
+// ---------------------------------------------------------------
+
 managers.discordBot = require('./modules/DiscordBot.js');
 managers.serverManager = require('./modules/ServerManager.js');
+managers.userManager = require('./modules/UserManager.js');
+
+// ---------------------------------------------------------------
 
 if(config.discordBot) {
-    managers.discordBot.startManager(apis, managers);
+    managers.discordBot.startManager(mainApp);
 }
 if(config.restartServer) {
-    managers.serverManager.startManager(apis, managers);
+    managers.serverManager.startManager(mainApp);
 }

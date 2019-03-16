@@ -4,6 +4,7 @@
     "dbUser": "username",
     "dbPassword": "password",
     "autoRegistration": true,
+    "webRegistration": true,
     "discordBot": true,
     "discordBotToken": "token",
     "discordBotChannelName": "channelName",

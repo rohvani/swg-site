@@ -7,11 +7,15 @@
     const utils = require('../utils');
     const timediff = require('timediff');
 
-    module.exports.startManager = function(apis, managers) {
+    var app;
+
+    exports.startManager = function(main) {
+        app = main;
+
         // Status checker
         setInterval(function() {
-            for(var clusterName in apis.apiSendMetrics.clusters) {
-                let cluster = apis.apiSendMetrics.clusters[clusterName];
+            for(var clusterName in app.apis.apiMetrics.clusters) {
+                let cluster = app.apis.apiMetrics.clusters[clusterName];
                 // if we haven't received an update in twice as long as the interval, the server isn't responding
                 if(Date.now() - cluster.clusterLastUpdate > (config.discordStatusInterval * 2 * 1000)) {
                     cluster.clusterStatus = "Offline";
@@ -28,8 +32,8 @@
         client.on('ready', () => {
             var channel = client.channels.find("name", config.discordBotChannelName);
             setInterval(function() {
-                for(var clusterName in  apis.apiSendMetrics.clusters) {
-                    let cluster =  apis.apiSendMetrics.clusters[clusterName];
+                for(var clusterName in  app.apis.apiMetrics.clusters) {
+                    let cluster =  app.apis.apiMetrics.clusters[clusterName];
                     channel.sendMessage(
                         "**Cluster** `"   + clusterName               + "`  " +
                         "**Status** `"    + cluster.clusterStatus     + "`  " +

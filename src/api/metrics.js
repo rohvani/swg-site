@@ -2,12 +2,14 @@
     var exports = module.exports = {};
 
     const timediff = require('timediff');
-    const utils = require('../utils');
 
     exports.clusters = { };
 
-    exports.registerEndpoint = function(app) {
-        app.post("/api/sendMetrics", function (req, res) {
+    var app;
+
+    exports.registerEndpoint = function(main) {
+        app = main;
+        app.app.post("/api/metrics", function (req, res) {
             var metrics = req.body;
             clusterName = metrics.clusterName;
 
@@ -33,7 +35,7 @@
             }
             else if (metrics.lastLoadingStateTime > 0) {
                 cluster.clusterStatus = "Online";
-                var lastLoadDate = utils.dateFromUTSC(metrics.lastLoadingStateTime);
+                var lastLoadDate = app.utils.dateFromUTSC(metrics.lastLoadingStateTime);
                 cluster.clusterLastLoad = timediff(lastLoadDate, Date.now(), 'DHmS');
             }
             else {
@@ -42,14 +44,17 @@
                 console.log("offline");
             }
 
-            console.log("New Metrics: \t" +
+            console.log("New Metrics: \t " +
                 "Cluster: "   + clusterName               + ", " +
                 "Status: "    + cluster.clusterStatus     + ", " +
                 "Players: "   + cluster.clusterPopulation + ", " +
-                "Last Load: " + utils.readableTimeDiff(cluster.clusterLastLoad) + " ago, " +
-                "Uptime: "    + utils.readableTimeDiff(cluster.clusterUptime));
+                "Last Load: " + app.utils.readableTimeDiff(cluster.clusterLastLoad) + " ago, " +
+                "Uptime: "    + app.utils.readableTimeDiff(cluster.clusterUptime));
 
             res.json('success');
+        });
+        app.app.get("/api/metrics", function (req, res) {
+            res.json(exports.clusters);
         });
     }
 }());

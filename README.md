@@ -27,11 +27,11 @@ Star Wars: Galaxies authentication/community suite, written in node.js
    the port and IP with where it's actually listening!*
 ```
 [CentralServer]
-metricsDataURL=http://127.0.0.1:3000/api/sendMetrics
+metricsDataURL=http://127.0.0.1:3000/api/metrics
 webUpdateIntervalSeconds=5
 
 [LoginServer]
-externalAuthURL=http://127.0.0.1:3000/api/auth
+externalAuthURL=http://127.0.0.1:3000/api/login
 useExternalAuth=true
 useJsonWebApi=true
 ```
