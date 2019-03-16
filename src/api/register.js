@@ -11,9 +11,10 @@
 
         var user = {
             username : username,
+            //@todo: email: email,
+            accesslevel: 'standard',
             password_hash: app.utils.getHash(password, salt),
             password_salt: salt,
-            accesslevel: 'standard'
         };
 
         app.database.instance.query("INSERT INTO user_account SET ?", user, function (err, result) {

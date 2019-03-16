@@ -18,8 +18,9 @@ DROP TABLE IF EXISTS `user_account`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user_account` (
   `user_id` int(11) NOT NULL AUTO_INCREMENT,
-  `accesslevel` varchar(255) NOT NULL,
-  `username` varchar(255) NOT NULL,
+  `username` varchar(16) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `accesslevel` varchar(16) NOT NULL,
   `password_salt` varchar(255) NOT NULL,
   `password_hash` varchar(255) NOT NULL,
   UNIQUE KEY `user_id` (`user_id`),

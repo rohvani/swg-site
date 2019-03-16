@@ -22,6 +22,7 @@
                         user = null;
                     } else {
                         user = {
+                            userid: user.user_id,
                             username : user.username,
                             sessionId : uuid.v4(),
                             accesslevel : user.accesslevel
