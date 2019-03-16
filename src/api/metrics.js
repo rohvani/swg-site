@@ -44,6 +44,8 @@
                 console.log("offline");
             }
 
+            cluster.clusterUptime = timediff(cluster.clusterStartTime, Date.now(), 'DHmS');
+
             console.log("New Metrics: \t " +
                 "Cluster: "   + clusterName               + ", " +
                 "Status: "    + cluster.clusterStatus     + ", " +
