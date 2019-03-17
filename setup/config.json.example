@@ -1,6 +1,6 @@
 {
     "dbHost": "127.0.0.1",
-    "dbName": "swg",
+    "dbName": "swgsite",
     "dbUser": "username",
     "dbPassword": "password",
     "autoRegistration": true,

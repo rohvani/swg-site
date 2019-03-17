@@ -1,6 +1,7 @@
 killall node
-cd src
+
+cd backend
 while [ : ]
 do
-	node main.js
+	nodejs main.js
 done

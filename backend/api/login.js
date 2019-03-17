@@ -8,7 +8,7 @@
     var app;
 
     // result: null=incorrect password, undefined=account does not exist
-    module.exports.loginAccount = function(username, password, callback)
+    exports.loginAccount = function(username, password, callback)
     {
         var sql = "SELECT * FROM user_account WHERE username = " + mysql.escape(username);
         app.database.instance.query(sql, function (err, result)
@@ -24,7 +24,7 @@
                         user = {
                             userid: user.user_id,
                             username : user.username,
-                            sessionId : uuid.v4(),
+                            sessionid : uuid.v4(),
                             accesslevel : user.accesslevel
                         };
                         app.managers.userManager.userSessions[user.username] = user;
@@ -34,13 +34,12 @@
                 callback(err, user);
             }
         });
-
     };
 
-    module.exports.loginResponseHandler = function(res, err, user, login)
+    exports.loginResponseHandler = function(res, err, user, login)
     {
         if(err != null) {
-            res.send( { message: 'An error has been encountered, please try again.' } );
+            res.send( { message: 'An error has been encountered: ' + err } );
             return
         }
 
@@ -68,10 +67,17 @@
         }
     };
 
-    module.exports.registerEndpoint = function(main) {
+    exports.registerEndpoint = function(main) {
         app = main;
-        main.app.post("/api/login", function (req, res) {
+        main.app.post("/api/login", function (req, res)
+        {
             var login = req.body;
+
+            // there are three different login types
+            // 1) a user login by SWG LoginServer with username, password, station id, and ip
+            // 2) a user login with username and password
+            // 3) a user login with session id
+
             module.exports.loginAccount(login.user_name, login.user_password, function(err, user){
                 module.exports.loginResponseHandler(res, err, user, login);
             });
