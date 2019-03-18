@@ -37,12 +37,13 @@
     import axios from "axios";
 
     export default {
-        name: 'CreateUser',
+        name: 'LoginUser',
         props: ['user', 'state'],
         data () {
             return {
                 serverResponse: "",
                 input: {
+                    type: "website",
                     user_name: "",
                     user_password: ""
                 }
@@ -80,6 +81,6 @@
         text-align: center;
     }
     .btn {
-        width: 75%;
+        width: 100%;
     }
 </style>

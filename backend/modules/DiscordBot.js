@@ -1,5 +1,6 @@
 (function() {
-    var exports = module.exports = {};
+    var app;
+    var self = module.exports = {};
 
     const discord = require('discord.js');
     const client = new discord.Client();
@@ -7,9 +8,7 @@
     const utils = require('../utils');
     const timediff = require('timediff');
 
-    var app;
-
-    exports.startManager = function(main) {
+    self.startManager = function(main) {
         app = main;
 
         // Status checker

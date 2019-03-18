@@ -1,85 +1,43 @@
 
 (function() {
-    var exports = module.exports = {};
-
-    const mysql = require('mysql');
-    const uuid = require("uuid");
-
     var app;
+    var self = module.exports = {};
 
-    // result: null=incorrect password, undefined=account does not exist
-    exports.loginAccount = function(username, password, callback)
-    {
-        var sql = "SELECT * FROM user_account WHERE username = " + mysql.escape(username);
-        app.database.instance.query(sql, function (err, result)
-        {
-            if(err != null) console.log(err);
-            else {
-                var user = (result.length >= 1 ? result[0] : undefined);
-
-                if (user !== undefined) {
-                    if (user.password_hash !== app.utils.getHash(password, user.password_salt)) {
-                        user = null;
-                    } else {
-                        user = {
-                            userid: user.user_id,
-                            username : user.username,
-                            sessionid : uuid.v4(),
-                            accesslevel : user.accesslevel
-                        };
-                        app.managers.userManager.userSessions[user.username] = user;
-                    }
-                }
-
-                callback(err, user);
-            }
-        });
-    };
-
-    exports.loginResponseHandler = function(res, err, user, login)
-    {
-        if(err != null) {
-            res.send( { message: 'An error has been encountered: ' + err } );
-            return
-        }
-
-        if (user !== undefined)
-        {
-            if(user !== null) {
-                console.log("New Login: \t User: " + login.user_name + ", IP: "   + login.ip);
-                res.send( { message: 'success', user: user } );
-            }
-            else {
-                console.log("Failed Login: \t User: " + login.user_name + ", IP: "   + login.ip);
-                res.send( { message: 'Invalid password' } );
-            }
-        }
-        else {
-            if ( app.config.autoRegistration )
-            {
-                app.apis.apiRegister.createAccount(login.user_name, login.user_password, "", function(err, user){
-                    module.exports.loginResponseHandler(res, err, user, login);
-                });
-            }
-            else {
-                res.send( { message: 'Unknown username' } );
-            }
-        }
-    };
-
-    exports.registerEndpoint = function(main) {
+    self.registerEndpoint = function(main) {
         app = main;
         main.app.post("/api/login", function (req, res)
         {
             var login = req.body;
 
             // there are three different login types
-            // 1) a user login by SWG LoginServer with username, password, station id, and ip
+            // 1) a user login by SWG LoginServer with username, password, station id, ip, and a cluster secret key
             // 2) a user login with username and password
             // 3) a user login with session id
 
-            module.exports.loginAccount(login.user_name, login.user_password, function(err, user){
-                module.exports.loginResponseHandler(res, err, user, login);
+            switch(login.type)
+            {
+                case "loginserver":
+                    break;
+                case "website":
+                    break;
+                case "sessionid":
+                    if(app.managers.userManager.isSessionIdValid(login.user_name, login.session_id)) {
+                        res.send( { message: "success" } );
+                    } else {
+                        res.send( { message: "Invalid session id" } );
+                    }
+                    return;
+                default:
+                    res.send( { message: "Unsupported login type" } );
+                    return;
+            }
+
+            app.managers.userManager.loginAccount(login.user_name, login.user_password, function(message, user) {
+                if (message === "success") {
+                    res.send( { message: message, user: user } );
+                } else {
+                    res.send( { message: message } );
+                }
             });
         });
     }

@@ -89,6 +89,6 @@
         text-align: center;
     }
     .btn {
-        width: 75%;
+        width: 100%;
     }
 </style>

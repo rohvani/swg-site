@@ -9,7 +9,7 @@
 
         <b-collapse is-nav id="nav_collapse">
           <b-navbar-nav>
-            <b-nav-item @click="state.currentPage='Dashboard'" href="#">Dashboard</b-nav-item>
+            <b-nav-item @click="state.currentPage = 'Dashboard'" href="#">Dashboard</b-nav-item>
           </b-navbar-nav>
 
           <!-- Right aligned nav items -->
@@ -17,12 +17,12 @@
 
             <b-nav-item-dropdown v-if="isAuthenticated()" right>
               <template slot="button-content"><em>Logged in as <b>{{user.username}}</b></em></template>
-              <b-dropdown-item v-if="isAuthenticated()" href="#">Profile</b-dropdown-item>
-              <b-dropdown-item v-if="isAuthenticated()" v-on:click="logoutUser()" href="#">Log out</b-dropdown-item>
+              <b-dropdown-item href="#">Profile</b-dropdown-item>
+              <b-dropdown-item v-on:click="logoutUser()" href="#">Log out</b-dropdown-item>
             </b-nav-item-dropdown>
             <b-nav-item-dropdown v-else text="Not signed in" right>
-              <b-dropdown-item @click="state.currentPage='LoginUser'" href="#">Sign-in</b-dropdown-item>
-              <b-dropdown-item @click="state.currentPage='CreateUser'" href="#">Create an account</b-dropdown-item>
+              <b-dropdown-item @click="state.currentPage = 'LoginUser'" href="#">Sign-in</b-dropdown-item>
+              <b-dropdown-item @click="state.currentPage = 'CreateUser'" href="#">Create an account</b-dropdown-item>
             </b-nav-item-dropdown>
 
           </b-navbar-nav>
@@ -42,6 +42,8 @@
 </template>
 
 <script>
+  import axios from "axios";
+
   import Dashboard from './components/Dashboard.vue'
   import LoginUser from './components/LoginUser.vue'
   import CreateUser from './components/CreateUser.vue'
@@ -66,8 +68,22 @@
     },
 
     mounted() {
-      if (localStorage.getItem('user')) {
-        this.user = JSON.parse(localStorage.getItem('user'));
+      if (localStorage.getItem('user'))
+      {
+        var cachedUser = JSON.parse(localStorage.getItem('user'));
+        var request = {
+          type:"sessionid",
+          user_name: cachedUser.username,
+          session_id: cachedUser.sessionId
+        };
+
+        axios({ method: "POST", "url": "api/login", "data": request, "headers": { "content-type": "application/json" } }).then(result => {
+          if(result.data.message === "success") {
+            this.user = JSON.parse(localStorage.getItem('user'));
+          }
+        }, error => {
+          console.error(error);
+        });
       }
     },
 

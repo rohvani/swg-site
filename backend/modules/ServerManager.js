@@ -1,12 +1,11 @@
 
 (function() {
-    var exports = module.exports = {};
+    var app;
+    var self = module.exports = {};
 
     const cp = require("child_process");
 
-    var app;
-
-    exports.startManager = function(main) {
+    self.startManager = function(main) {
         app = main;
         setInterval(function() {
             var cluster =  app.apis.apiMetrics.clusters[app.config.restartClusterName];

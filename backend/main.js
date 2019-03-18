@@ -23,21 +23,13 @@ var utils = mainApp.utils = require('./utils');
 
 // ---------------------------------------------------------------
 
-apis.apiLogin = require('./api/login.js');
-apis.apiRegister = require('./api/register.js');
-apis.apiMetrics = require('./api/metrics.js');
-
-apis.apiLogin.registerEndpoint(mainApp);
-apis.apiRegister.registerEndpoint(mainApp);
-apis.apiMetrics.registerEndpoint(mainApp);
-
-// ---------------------------------------------------------------
-
 managers.discordBot = require('./modules/DiscordBot.js');
 managers.serverManager = require('./modules/ServerManager.js');
 managers.userManager = require('./modules/UserManager.js');
 
 // ---------------------------------------------------------------
+
+managers.userManager.startManager(mainApp);
 
 if(config.discordBot) {
     managers.discordBot.startManager(mainApp);
@@ -45,3 +37,13 @@ if(config.discordBot) {
 if(config.restartServer) {
     managers.serverManager.startManager(mainApp);
 }
+
+// ---------------------------------------------------------------
+
+apis.apiLogin = require('./api/login.js');
+apis.apiRegister = require('./api/register.js');
+apis.apiMetrics = require('./api/metrics.js');
+
+apis.apiLogin.registerEndpoint(mainApp);
+apis.apiRegister.registerEndpoint(mainApp);
+apis.apiMetrics.registerEndpoint(mainApp);
