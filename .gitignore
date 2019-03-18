@@ -1,6 +1,9 @@
 config.json
 package-lock.json
 
+www/
+.idea/
+
 # Logs
 logs
 *.log
