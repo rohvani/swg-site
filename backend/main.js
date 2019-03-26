@@ -23,9 +23,9 @@ var utils = mainApp.utils = require('./utils');
 
 // ---------------------------------------------------------------
 
-managers.discordBot = require('./modules/DiscordBot.js');
-managers.serverManager = require('./modules/ServerManager.js');
-managers.userManager = require('./modules/UserManager.js');
+managers.discordBot = require('./managers/DiscordBot.js');
+managers.serverManager = require('./managers/ServerManager.js');
+managers.userManager = require('./managers/UserManager.js');
 
 // ---------------------------------------------------------------
 
