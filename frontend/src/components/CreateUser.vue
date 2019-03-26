@@ -1,52 +1,53 @@
 <template>
+
     <div id="createUser">
+
         <b-form>
+
             <b-form-group label="User Name" label-for="username">
                 <b-form-input
                         id="username"
                         type="text"
                         v-model="input.user_name"
-                        required
-                />
+                        required></b-form-input>
             </b-form-group>
+
             <b-form-group label="Email Address" label-for="email_address">
                 <b-form-input
                         id="email_address"
                         type="text"
                         v-model="input.user_email"
-                        required
-                />
+                        required></b-form-input>
             </b-form-group>
+
             <b-form-group label="Password" label-for="password">
                 <b-form-input
                         id="password"
                         type="password"
                         v-model="input.user_password"
                         required
-                        description="Be careful"
-                />
+                        description="Be careful"></b-form-input>
             </b-form-group>
-
-            <b-alert variant="danger" dismissible v-model="showDismissibleAlert">
-                Dismissible Alert!
-            </b-alert>
 
             <b-alert v-if="serverResponse" show>{{serverResponse}}</b-alert>
 
             <b-button v-on:click="createUser()">Create Account</b-button>
 
         </b-form>
-        
-       
+
     </div>
+
 </template>
 
 <script>
     import axios from "axios";
 
-    export default {
+    export default
+    {
         name: 'CreateUser',
+
         props: ['user', 'state'],
+
         data () {
             return {
                 serverResponse: "",
@@ -57,6 +58,7 @@
                 }
             }
         },
+
         methods: {
             createUser() {
                 axios({ method: "POST", "url": "api/register", "data": this.input, "headers": { "content-type": "application/json" } }).then(result =>
@@ -65,7 +67,6 @@
                     {
                         this.state.currentPage = "Dashboard";
                         this.serverResponse = "";
-
                         this.$emit('userModified', result.data.user);
                         this.$emit('stateModified', this.state);
                     }

@@ -36,10 +36,14 @@
 <script>
     import axios from "axios";
 
-    export default {
+    export default
+    {
         name: 'LoginUser',
+
         props: ['user', 'state'],
-        data () {
+
+        data ()
+        {
             return {
                 serverResponse: "",
                 input: {
@@ -49,6 +53,7 @@
                 }
             }
         },
+
         methods: {
             loginUser() {
                 axios({ method: "POST", "url": "api/login", "data": this.input, "headers": { "content-type": "application/json" } }).then(result =>
@@ -69,7 +74,6 @@
                 });
             }
         }
-
     }
 </script>
 
