@@ -11,7 +11,7 @@
 
         // Status checker
         setInterval(function() {
-            for(var clusterName in clusters)
+            for(let clusterName in clusters)
             {
                 let cluster = clusters[clusterName];
                 // if we haven't received an update in twice as long as the interval, the server isn't responding

@@ -7,7 +7,7 @@
         app = main;
         main.app.post("/api/login", function (req, res)
         {
-            var login = req.body;
+            let login = req.body;
 
             // there are three different login types
             // 1) a user login by SWG LoginServer with username, password, station id, ip, and a cluster secret key

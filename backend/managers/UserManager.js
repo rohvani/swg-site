@@ -7,7 +7,6 @@
     const mysql = require('mysql');
     const uuid = require("uuid");
 
-
     var userSessions = self.userSessions = { };
 
     self.startManager = function(main)
@@ -17,7 +16,7 @@
 
     self.isSessionIdValid = function(username, sessionId)
     {
-        var userSession = self.userSessions[username];
+        let userSession = self.userSessions[username];
         if(userSession !== undefined) {
             return userSession.sessionId === sessionId;
         }
@@ -26,19 +25,19 @@
 
     self.createAccount = function(username, password, email, callback)
     {
-        if(username.length == 0) {
+        if(username.length === 0) {
             callback("Tried to create an account with no username", undefined);
             return;
         }
 
-        if(password.length == 0) {
+        if(password.length === 0) {
             callback("Tried to create an account with no password", undefined);
             return;
         }
 
-        var salt = crypto.randomBytes(8).toString('hex');
+        let salt = crypto.randomBytes(8).toString('hex');
 
-        var user = {
+        let user = {
             username : username,
             email: email,
             accesslevel: 'standard',
@@ -48,7 +47,7 @@
 
         app.database.instance.query("INSERT INTO user_account SET ?", user, function (err, result) {
             if (err) {
-                if(err.code == "ER_DUP_ENTRY") {
+                if(err.code === "ER_DUP_ENTRY") {
                     callback("Someone else already registered that username. Please pick a different username.", undefined);
                 }
                 else {
@@ -64,7 +63,7 @@
     // result: null=incorrect password, undefined=account does not exist
     self.loginAccount = function(username, password, callback)
     {
-        var sql = "SELECT * FROM user_account WHERE username = " + mysql.escape(username);
+        let sql = "SELECT * FROM user_account WHERE username = " + mysql.escape(username);
         app.database.instance.query(sql, function (err, result)
         {
             if(err) {
@@ -72,8 +71,8 @@
                 callback("An unknown error has occurred, please report this to an administrator", undefined);
             }
             else {
-                var message = "Incorrect username or password";
-                var user = (result.length >= 1 ? result[0] : undefined);
+                let message = "Incorrect username or password";
+                let user = (result.length >= 1 ? result[0] : undefined);
 
                 if (user !== undefined) {
                     if (user.password_hash !== app.utils.getHash(password, user.password_salt)){

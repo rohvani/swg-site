@@ -10,7 +10,7 @@
         {
             app.app.post("/api/register", function (req, res)
             {
-                var login = req.body;
+                let login = req.body;
 
                 app.managers.userManager.createAccount(login.user_name, login.user_password, login.user_email, function(message, user) {
                     if (message === "success") {

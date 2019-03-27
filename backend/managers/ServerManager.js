@@ -15,7 +15,7 @@
         app = main;
 
         setInterval(function () {
-            var cluster =  app.managers.metricsManager.clusters[app.config.restartClusterName];
+            let cluster =  app.managers.metricsManager.clusters[app.config.restartClusterName];
             if(cluster !== undefined)
             {
                 if(cluster.clusterStatus === "Offline")
