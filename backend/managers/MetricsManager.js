@@ -21,9 +21,7 @@
                     cluster.clusterUptime = { "days": 0, "hours": 0, "minutes": 0, "seconds": 0 };
                     cluster.clusterPopulation = 0;
                     cluster.clusterStartTime = null;
-                } /* else {
-                    cluster.clusterUptime = timediff(cluster.clusterStartTime, Date.now(), 'DHmS');
-                }*/
+                }
             }
         }, 15 * 1000)
     };

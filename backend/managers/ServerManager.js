@@ -5,28 +5,28 @@
 
     const cp = require("child_process");
 
+    self.startServer = function() {
+        cp.exec(app.config.restartCommand, {cwd: app.config.restartWorkingPath}, function (error, stdout, stderr) {
+            console.log(error);
+        });
+    };
+
     self.startManager = function(main) {
         app = main;
-        setInterval(function()
-        {
+
+        setInterval(function () {
             var cluster =  app.managers.metricsManager.clusters[app.config.restartClusterName];
             if(cluster !== undefined)
             {
                 if(cluster.clusterStatus === "Offline")
                 {
                     console.log("[****] Restarting server!!!");
-                    cp.exec(app.config.restartCommand, {cwd: app.config.restartWorkingPath}, function(error,stdout,stderr){ });
-                    if(app.config.discordBot)
-                    {
-                        var channel = client.channels.find("name", app.config.discordBotChannelName);
-                        channel.sendMessage("@here **Restarting cluster `" + app.config.restartClusterName + "` due to detected offline status!**");
-                    }
+                    self.startServer();
+                    // @TODO: send message to discord manager if enabled
                 }
             } else {
                 console.log("[****] Starting server!!!");
-                cp.exec(app.config.restartCommand, {cwd: app.config.restartWorkingPath}, function(error,stdout,stderr){
-                    console.log(error);
-                });
+                self.startServer();
             }
         }, 15 * 1000)
     }
