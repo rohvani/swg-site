@@ -1,8 +1,8 @@
 basedir=$PWD
 
 cd $basedir/backend
-#npm install
+npm install
 
 cd $basedir/frontend
-#npm install
+npm install
 npm run build
