@@ -26,15 +26,15 @@ var utils = mainApp.utils = require('./utils');
 managers.userManager = require('./managers/UserManager.js');
 managers.metricsManager = require('./managers/MetricsManager.js');
 managers.serverManager = require('./managers/ServerManager.js');
-managers.discordBot = require('./managers/DiscordBot.js');
+managers.discordManager = require('./managers/DiscordManager.js');
 
 // ---------------------------------------------------------------
 
 managers.userManager.startManager(mainApp);
 managers.metricsManager.startManager(mainApp);
 
-if(config.discordBot) {
-    managers.discordBot.startManager(mainApp);
+if(config.discordManager) {
+    managers.discordManager.startManager(mainApp);
 }
 if(config.restartServer) {
     managers.serverManager.startManager(mainApp);

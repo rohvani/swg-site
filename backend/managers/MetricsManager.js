@@ -63,10 +63,10 @@
         cluster.clusterUptime = timediff(cluster.clusterStartTime, Date.now(), 'DHmS');
 
         console.log("New Metrics: \t " +
-            "Cluster: "   + clusterName               + ", " +
-            "Status: "    + cluster.clusterStatus     + ", " +
-            "Players: "   + cluster.clusterPopulation + ", " +
-            "Last Load: " + app.utils.readableTimeDiff(cluster.clusterLastLoad) + " ago, " +
-            "Uptime: "    + app.utils.readableTimeDiff(cluster.clusterUptime));
+                    "Cluster: "   + clusterName               + ", " +
+                    "Status: "    + cluster.clusterStatus     + ", " +
+                    "Players: "   + cluster.clusterPopulation + ", " +
+                    "Last Load: " + app.utils.readableTimeDiff(cluster.clusterLastLoad) + " ago, " +
+                    "Uptime: "    + app.utils.readableTimeDiff(cluster.clusterUptime));
     };
 }());
