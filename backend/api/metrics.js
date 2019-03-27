@@ -8,6 +8,7 @@
         app.app.post("/api/metrics", function (req, res) {
             let metrics = req.body;
             console.log(JSON.stringify(metrics));
+            // @TODO: add cluster secret key verification
             app.managers.metricsManager.processNewMetrics(metrics);
             res.json('success');
         });

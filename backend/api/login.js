@@ -17,6 +17,7 @@
             switch(login.type)
             {
                 case "loginserver":
+                    // @TODO: add cluster secret key verification
                     break;
                 case "website":
                     break;
@@ -31,6 +32,8 @@
                     res.send( { message: "Unsupported login type" } );
                     return;
             }
+
+            // @TODO: log login attempt and type
 
             app.managers.userManager.loginAccount(login.user_name, login.user_password, function(message, user) {
                 if (message === "success") {
